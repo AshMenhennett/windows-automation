@@ -1,0 +1,5 @@
+- name: Configure SSH
+  hosts: windows
+  vars_files: ../openssh_vars.yml
+  roles:
+    - win_service_config

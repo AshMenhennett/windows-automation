@@ -1,0 +1,21 @@
+---
+# tasks file for win_ad_user
+- name: Create Active Directory Objects
+  block:
+    - name: Create Groups
+      win_domain_group:
+        name: "{{ item.group_name }}"
+        scope: "{{ item.group_scope }}"
+      loop: "{{ group_info }}"
+
+    - name: Create Identities
+      win_domain_user:
+        name: "{{ item.name }}"
+        firstname: "{{ item.firstname }}"
+        surname: "{{ item.surname }}"
+        password: "{{ item.password }}"
+        state: present
+        groups_action: replace
+        groups: 
+          - "{{ item.group }}"
+      loop: "{{ user_info }}"

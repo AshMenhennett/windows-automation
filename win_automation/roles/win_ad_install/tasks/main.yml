@@ -1,0 +1,35 @@
+---
+# tasks file for win_ad_install
+- name: Install Active Directory
+  block:
+  - name: Install AD Domain Services
+    win_feature:
+      name: AD-Domain-Services
+      state: present
+      include_management_tools: yes
+    register: features_install
+
+  - name: Reboot Server
+    win_reboot:
+    when: features_install.reboot_required
+
+- name: Setup Active Directory
+  block:
+  - name: Create Windows Domain
+    win_domain:
+      create_dns_delegation: no
+      database_path: C:\Windows\NTDS
+      dns_domain_name: "{{ ad_domain_name }}"
+      domain_mode: Win2012R2
+      domain_netbios_name: ANSIBLE
+      forest_mode: Win2012R2
+      safe_mode_password: "{{ ad_admin_password }}"
+      sysvol_path: C:\Windows\SYSVOL
+    register: domain_install
+
+  - name: Reboot Server
+    win_reboot:
+    when: domain_install.reboot_required
+
+  - name: List Domain Controllers
+    win_command: nltest /dclist:"{{ ad_domain_name }}"

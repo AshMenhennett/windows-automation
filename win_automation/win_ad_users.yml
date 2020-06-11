@@ -1,0 +1,5 @@
+- name: Create Objects
+  hosts: windows
+  vars_files: ../ad_users_vars.yml
+  roles:
+    - win_ad_user
